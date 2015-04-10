@@ -5,7 +5,7 @@ This code creates a binary web service for metadata support within a network con
 
 Machines within the network can curl this metadata service for network-specific information.
 
-For example, you can install CoreOS on /dev/sda by simply running (replace metadata-service with the hostname of your installation of the metadata-service):
+For example, from a USB or PXE booted machine, you can install CoreOS on /dev/sda by simply running (replace metadata-service with the hostname of your installation of the metadata-service):
 
 ```
 eval "`curl -s metadata-service:8080/metadata/v1/install`"
