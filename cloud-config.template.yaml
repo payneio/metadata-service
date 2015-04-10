@@ -3,16 +3,20 @@
 hostname: <<.Hostname>>
 coreos:
   update: 
-    reboot-strategy: etcd-lock
+    reboot-strategy: best-effort
   etcd:
+    name: <<.Hostname>>
     discovery: <<.ETCDURL>>
-    advertise-client-urls: http://<<.PublicIPV4>>:2379
-    initial-advertise-peer-urls: http://<<.PrivateIPV4>>:2380
-    # listen on both the official ports and the legacy ports
-    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    listen-peer-urls: http://<<.PrivateIPV4>>:2380,http://<<.PrivateIPV4>>:7001
+    addr: <<.PublicIPV4>>:4001
+    peer-addr: <<.PrivateIPV4>>:7001
+  # etcd2:
+    # discovery: <<.ETCDURL>>
+    # advertise-client-urls: http://<<.PublicIPV4>>:2379
+    # initial-advertise-peer-urls: http://<<.PrivateIPV4>>:2380
+    # listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    # listen-peer-urls: http://<<.PrivateIPV4>>:2380,http://<<.PrivateIPV4>>:7001
   fleet:
-    public-ip: <<.PublicIPV4>>
+    # public-ip: <<.PublicIPV4>>
     metadata: region=sea
   units:
     - name: etcd.service

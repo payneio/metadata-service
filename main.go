@@ -26,7 +26,7 @@ func main() {
 
 	metadataService := "ops:8080/metadata/v1"
 
-	templateFilename := "cloud-config.yaml.template"
+	templateFilename := "cloud-config.template.yaml"
 	t := template.New(templateFilename).Delims("<<", ">>")
 	t, err := t.ParseFiles(templateFilename)
 	if err != nil {
