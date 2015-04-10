@@ -1,0 +1,57 @@
+#cloud-config
+
+hostname: <<.Hostname>>
+coreos:
+  update: 
+    reboot-strategy: etcd-lock
+  etcd:
+    discovery: <<.ETCDURL>>
+    advertise-client-urls: http://<<.PublicIPV4>>:2379
+    initial-advertise-peer-urls: http://<<.PrivateIPV4>>:2380
+    # listen on both the official ports and the legacy ports
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    listen-peer-urls: http://<<.PrivateIPV4>>:2380,http://<<.PrivateIPV4>>:7001
+  fleet:
+    public-ip: <<.PublicIPV4>>
+    metadata: region=sea
+  units:
+    - name: etcd.service
+      command: start
+      enable: true
+    - name: fleet.service
+      command: start
+      enable: true
+    - name: docker.service
+      drop-ins:
+        - name: 50-dns-search.conf
+          content: |
+            [Service]
+            Environment='DOCKER_OPTS=--dns 172.17.42.1 --dns-search cluster.local'
+write_files:
+  - path: /etc/stack_environment
+    content: |
+      STACK_NAME=<<.StackName>>
+      STACK_ROLE=control
+      STACK_DNS_SUFFIX=cluster.local
+  - path: /etc/environment
+    content: |
+      COREOS_PUBLIC_IPV4=<<.PublicIPV4>>
+      COREOS_PRIVATE_IPV4=<<.PrivateIPV4>>
+  - path: /etc/profile.d/alias.sh
+    content: |
+      alias ll='ls -l'
+      alias d='docker'
+      alias ds='docker ps'
+      alias di='docker images'
+      alias drm='docker rm -f $(docker ps -qa)'
+      alias sd='sudo systemctl'
+      alias cci='sudo coreos-cloudinit --from-file'
+      alias j='journalctl'
+      alias fc='fleetctl'
+      alias fclm='fleetctl list-machines'
+      alias fclu='fleetctl list-units'
+      function nsa { sudo nsenter -p -u -m -i -n -t $(docker inspect -f '{{ .State.Pid }}' $1) ; }
+
+ssh_authorized_keys:
+  - <<.SSHAuthorizedKeys>>
+

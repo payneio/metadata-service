@@ -1,0 +1,5 @@
+{
+  "ETCDURL": "https://discovery.etcd.io/<put your token here>",
+  "StackName": "<a name for your stack>",
+  "SSHAuthorizedKeys": "ssh-rsa <an rsa public key to use to ssh into your new coreos servers>"
+}
